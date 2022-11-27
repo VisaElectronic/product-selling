@@ -34,7 +34,13 @@ int main()
   //   main();
   // }
   UserModel usersModel;
-  std::vector<std::string> users = usersModel.findAll();
+  // User user("33", "testinguser", "hello");
+  // usersModel.create(user);
+  // std::vector<User> users = usersModel.findAll();
+  // std::cout << users[1].getUsername() << std::endl;
+  User user2 = usersModel.findById("20");
+  std::cout << user2.getUsername() << std::endl;
+  usersModel.destroyById("20");
 
   return 0;
 }
