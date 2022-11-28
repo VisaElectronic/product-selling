@@ -10,9 +10,9 @@ private:
     std::string password;
 
 public:
-    User(): id(""), username(""), password("") {}
-    User(std::string id, std::string username, std::string password) : id(id), username(username), password(password) {}
-    std::string getId()
+    User(): id(0), username(""), password("") {}
+    User(std::string username, std::string password) : id("1"), username(username), password(password) {}
+    std::string getId() const
     {
         return this->id;
     }

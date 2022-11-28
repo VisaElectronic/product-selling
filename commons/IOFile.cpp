@@ -18,6 +18,7 @@ public:
     void write(T str, std::string FILE_PATH);
     // read from file
     std::vector<std::string> readAll(std::string FILE_PATH);
+    // create file
     void createFile(std::string FILE_PATH);
     // remove file
     bool removeFile(std::string FILE_PATH);
