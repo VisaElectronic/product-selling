@@ -1,25 +1,60 @@
 #include <iostream>
 #include "../models/user/User.cpp"
 #include "../models/user/UserModel.cpp"
+#include "../commons/Validator.cpp"
 
 class App
 {
-public:
-    void signIn(std::string &username, std::string &password){
-        std::cout << "Username: ";
-        std::cin >> username;
-        std::cout << "Password: ";
-        std::cin >> password;
+private:
+    void inputSignIn(std::string &username, std::string &password)
+    {
+        // bool check;
+        do
+        {
+            std::cout << "Username: ";
+            std::getline(std::cin, username);
+            if (!Validator::check(username))
+            {
+                continue;
+            }
+            std::cout << "Password: ";
+            std::getline(std::cin, password);
+            if (!Validator::check(password))
+            {
+                continue;
+            }
+            break;
+            /* code */
+        } while (true);
     }
-
-    void signUp(std::string &username, std::string &password, std::string &confirmPassword){
+    void inputSignUp(std::string &username, std::string &password, std::string &confirmPassword)
+    {
         this->signIn(username, password);
         std::cout << "Confirm Password: ";
-        std::cin >> confirmPassword;
-        if(password != confirmPassword)
+        std::getline(std::cin, confirmPassword);
+        if (password != confirmPassword)
         {
-            std::cout << "Password Does Not Match" << std::endl;
+            std::cout << "Password Does Not Match, Try again!" << std::endl;
+            inputSignUp(username, password, confirmPassword);
         }
-        UserModel::create(User("visa", "123456"));
+    }
+
+public:
+    void signIn(std::string &username, std::string &password)
+    {
+        this->inputSignIn(username, password);
+        std::string userId = UserModel::login(username, password);
+        if(userId == "")
+        {
+            std::cout << "User Not Found!" << std::endl;
+            return;
+        }
+        std::cout << "Userid = " << userId << std::endl;
+    }
+
+    void signUp(std::string &username, std::string &password, std::string &confirmPassword)
+    {
+        this->inputSignUp(username, password, confirmPassword);
+        UserModel::create(User(username, password));
     }
 };

@@ -1,12 +1,13 @@
 #include <iostream>
 #include <fstream>
+#include <string>
 #include "commons/IOFile.cpp"
 #include "app/App.cpp"
 
 int main()
 {
   App app;
-  int choice;
+  std::string choiceStr;
   std::string username, password, confirmPassword;
   std::cout << "***********************************************************************\n\n\n";
   std::cout << "                      Product Selling System                               \n\n";
@@ -15,16 +16,16 @@ int main()
   std::cout << "2.REGISTER" << std::endl;
   std::cout << "3.Exit" << std::endl;
   std::cout << "\nEnter your choice :";
-  std::cin >> choice;
+  std::getline(std::cin, choiceStr);
   std::cout << std::endl;
-  switch (choice)
+  switch (std::stoi(choiceStr))
   {
   case 1:
     app.signIn(username, password);
     break;
   case 2:
     app.signUp(username, password, confirmPassword);
-    app.signUp(username, password, confirmPassword);
+    // app.signUp(username, password, confirmPassword);
     break;
   case 3:
 
@@ -35,9 +36,6 @@ int main()
     std::cout << "Invalid option, Try again..\n"
               << std::endl;
   }
-  // UserModel usersModel;
-  // User user = usersModel.findById("2");
-  // usersModel.update(User("3", "Love Kunthea", "@@@"));
 
   return 0;
 }

@@ -10,9 +10,9 @@ class User;
 class UserModel
 {
 private:
-    static int totalUsers;
+    static int generateId();
     std::vector<User> rearrangeData(std::vector<std::string>);
-    User *findUserById(std::vector<std::string>, std::string);
+    static User *findUserById(std::vector<std::string>, std::string);
     std::vector<std::string> searchAndRemove(std::vector<std::string>, std::string);
     bool findAndUpdate(std::vector<std::string>, User user);
 
@@ -21,15 +21,29 @@ public:
     static int countUsers();
     std::vector<User> findAll();
     static void create(User);
-    User findById(std::string);
+    static User findById(std::string);
     void destroyById(std::string);
     void update(User);
+    static std::string login(std::string, std::string);
+    static std::string test();
 };
 
-int UserModel::totalUsers = 0;
 int UserModel::countUsers()
 {
-    return UserModel::totalUsers;
+    UserModel userModel;
+    return userModel.findAll().size();
+}
+
+int UserModel::generateId()
+{
+    IOFile file;
+    std::vector<std::string> stream = file.readAll(constants::USER_FILE_PATH);
+    if (!stream.empty())
+    {
+        return std::stoi(stream[stream.size() - 4]) + 1;
+    }
+    else
+        return 1;
 }
 
 std::vector<User> UserModel::rearrangeData(std::vector<std::string> data)
@@ -152,7 +166,7 @@ void UserModel::create(User user)
 {
     IOFile file;
     std::vector<std::string> userVec;
-    userVec.push_back(std::to_string(++UserModel::totalUsers));
+    userVec.push_back(std::to_string(UserModel::generateId()));
     userVec.push_back(user.getUsername());
     userVec.push_back(user.getPassword());
     file.write(userVec, constants::USER_FILE_PATH);
@@ -162,7 +176,7 @@ void UserModel::create(User user)
 User UserModel::findById(std::string id)
 {
     IOFile file;
-    User *userPtr = this->findUserById(file.readAll(constants::USER_FILE_PATH), id);
+    User *userPtr = UserModel::findUserById(file.readAll(constants::USER_FILE_PATH), id);
     if (!userPtr)
     {
         delete userPtr;
@@ -170,7 +184,6 @@ User UserModel::findById(std::string id)
     }
     User user = *userPtr;
     delete userPtr;
-    UserModel::totalUsers--;
     return user;
 }
 
@@ -206,4 +219,48 @@ void UserModel::update(User updatedUser)
         // do stuff with exception...
         std::cout << e.what() << std::endl;
     }
+}
+
+std::string UserModel::login(std::string username, std::string password)
+{
+    IOFile file;
+    std::vector<std::string> stream = file.readAll(constants::USER_FILE_PATH);
+    std::string userId, uname, psw;
+    bool matchedUsername = false;
+    bool matchedPassword = false;
+    for (auto it = stream.begin(); it != stream.end(); ++it)
+    {
+        int index = std::distance(stream.begin(), it) + 1;
+        if (index % 4 == 1)
+        {
+            userId = *it;
+        }
+        if (index % 4 == 2 && username == *it)
+        {
+            matchedUsername = true;
+            uname = *it;
+        }
+        if (matchedUsername && index % 4 == 3 && password == *it)
+        {
+            matchedPassword = true;
+        }
+        else if(index % 4 != 2 && !matchedPassword)
+        {
+            matchedUsername = false;
+        }
+        if (matchedUsername && matchedPassword)
+        {
+            if (index % 4 == 0 || index == std::distance(stream.begin(), stream.end()))
+            {
+                return userId;
+            }
+        }
+    }
+    return "";
+}
+
+std::string UserModel::test()
+{
+    std::cout << "test" <<std::endl;
+    return "";
 }
