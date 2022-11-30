@@ -2,11 +2,11 @@
 #include <fstream>
 #include <string>
 #include "commons/IOFile.cpp"
-#include "app/App.cpp"
+#include "auth/Auth.cpp"
 
 int main()
 {
-  App app;
+  Auth auth;
   std::string choiceStr;
   std::string username, password, confirmPassword;
   std::cout << "***********************************************************************\n\n\n";
@@ -21,10 +21,10 @@ int main()
   switch (std::stoi(choiceStr))
   {
   case 1:
-    app.signIn(username, password);
+    auth.signIn(username, password);
     break;
   case 2:
-    app.signUp(username, password, confirmPassword);
+    auth.signUp(username, password, confirmPassword);
     // app.signUp(username, password, confirmPassword);
     break;
   case 3:

@@ -40,7 +40,7 @@ int UserModel::generateId()
     std::vector<std::string> stream = file.readAll(constants::USER_FILE_PATH);
     if (!stream.empty())
     {
-        return std::stoi(stream[stream.size() - 4]) + 1;
+        return std::stoi(stream[stream.size() - 5]) + 1;
     }
     else
         return 1;
@@ -53,19 +53,19 @@ std::vector<User> UserModel::rearrangeData(std::vector<std::string> data)
     for (auto it = data.begin(); it != data.end(); ++it)
     {
         int index = std::distance(data.begin(), it) + 1;
-        if (index % 4 == 1)
+        if (index % 5 == 1)
         {
             id = *it;
         }
-        if (index % 4 == 2)
+        if (index % 5 == 2)
         {
             username = *it;
         }
-        if (index % 4 == 3)
+        if (index % 5 == 3)
         {
             password = *it;
         }
-        if (index % 4 == 0 || index == std::distance(data.begin(), data.end()))
+        if (index % 5 == 0 || index == std::distance(data.begin(), data.end()))
         {
             User user(username, password);
             users.push_back(user);
@@ -81,22 +81,22 @@ User *UserModel::findUserById(std::vector<std::string> data, std::string id)
     for (auto it = data.begin(); it != data.end(); ++it)
     {
         int index = std::distance(data.begin(), it) + 1;
-        if (index % 4 == 1 && id == *it)
+        if (index % 5 == 1 && id == *it)
         {
             found = true;
             userId = *it;
         }
         if (found)
         {
-            if (index % 4 == 2)
+            if (index % 5 == 2)
             {
                 username = *it;
             }
-            if (index % 4 == 3)
+            if (index % 5 == 3)
             {
                 password = *it;
             }
-            if (index % 4 == 0 || index == std::distance(data.begin(), data.end()))
+            if (index % 5 == 0 || index == std::distance(data.begin(), data.end()))
             {
                 return new User(username, password);
             }
@@ -109,9 +109,9 @@ std::vector<std::string> UserModel::searchAndRemove(std::vector<std::string> dat
 {
     for (std::vector<std::string>::size_type i = 0; i != data.size(); i++)
     {
-        if (i % 4 == 0 && data[i] == id)
+        if (i % 5 == 0 && data[i] == id)
         {
-            data.erase(std::next(data.begin(), i), std::next(data.begin(), i + 4));
+            data.erase(std::next(data.begin(), i), std::next(data.begin(), i + 5));
             break;
         }
     }
@@ -124,21 +124,21 @@ bool UserModel::findAndUpdate(std::vector<std::string> data, User user)
     for (auto it = data.begin(); it != data.end(); ++it)
     {
         int index = std::distance(data.begin(), it) + 1;
-        if (index % 4 == 1 && user.getId() == *it)
+        if (index % 5 == 1 && user.getId() == *it)
         {
             found = true;
         }
         if (found)
         {
-            if (index % 4 == 2)
+            if (index % 5 == 2)
             {
                 data[index - 1] = user.getUsername();
             }
-            if (index % 4 == 3)
+            if (index % 5 == 3)
             {
                 data[index - 1] = user.getPassword();
             }
-            if (index % 4 == 0 || index == std::distance(data.begin(), data.end()))
+            if (index % 5 == 0 || index == std::distance(data.begin(), data.end()))
             {
                 IOFile file;
                 if (file.removeFile(constants::USER_FILE_PATH))
@@ -169,6 +169,7 @@ void UserModel::create(User user)
     userVec.push_back(std::to_string(UserModel::generateId()));
     userVec.push_back(user.getUsername());
     userVec.push_back(user.getPassword());
+    userVec.push_back("0");
     file.write(userVec, constants::USER_FILE_PATH);
     std::cout << "User created successfully!" << std::endl;
 }
@@ -231,26 +232,26 @@ std::string UserModel::login(std::string username, std::string password)
     for (auto it = stream.begin(); it != stream.end(); ++it)
     {
         int index = std::distance(stream.begin(), it) + 1;
-        if (index % 4 == 1)
+        if (index % 5 == 1)
         {
             userId = *it;
         }
-        if (index % 4 == 2 && username == *it)
+        if (index % 5 == 2 && username == *it)
         {
             matchedUsername = true;
             uname = *it;
         }
-        if (matchedUsername && index % 4 == 3 && password == *it)
+        if (matchedUsername && index % 5 == 3 && password == *it)
         {
             matchedPassword = true;
         }
-        else if(index % 4 != 2 && !matchedPassword)
+        else if(index % 5 != 2 && !matchedPassword)
         {
             matchedUsername = false;
         }
         if (matchedUsername && matchedPassword)
         {
-            if (index % 4 == 0 || index == std::distance(stream.begin(), stream.end()))
+            if (index % 5 == 0 || index == std::distance(stream.begin(), stream.end()))
             {
                 return userId;
             }
