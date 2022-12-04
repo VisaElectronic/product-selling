@@ -1,7 +1,7 @@
 // reading a text file
 #include <iostream>
 #include "../models/user/User.cpp"
-#include "../models/user/UserModel.cpp"
+#include "../models/user/UserManager.cpp"
 #include "../commons/Validator.cpp"
 #include "../app/App.cpp"
 
@@ -45,21 +45,22 @@ public:
     void signIn(std::string &username, std::string &password)
     {
         this->inputSignIn(username, password);
-        std::string userId = UserModel::login(username, password);
+        std::string userId = UserManager::login(username, password);
         if(userId == "")
         {
             std::cout << "User Not Found!" << std::endl;
             return;
         }
-        User user = UserModel::findById(userId);
+        User user = UserManager::findById(userId);
         std::cout << "Login Successfully!" << std::endl;
         user.getType() == "1" ? App::session = 1 : App::session = 2;
-        std::cout << "App: " << App::session << std::endl;
+        App::sessionId = user.getId();
+        std::cout << "sessionId: " << user.getName() << std::endl;
     }
 
     void signUp(std::string &username, std::string &password, std::string &confirmPassword)
     {
         this->inputSignUp(username, password, confirmPassword);
-        UserModel::create(User(username, password));
+        UserManager::create(User(username, password));
     }
 };

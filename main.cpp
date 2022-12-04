@@ -5,11 +5,13 @@
 #include "app/App.cpp"
 #include "app/AdminApp.cpp"
 #include "app/UserApp.cpp"
+#include "database/Database.cpp"
 
 int main()
 {
   App* app;
   Auth auth;
+  Database::init();
   std::string choiceStr;
   do
   {
@@ -34,7 +36,7 @@ int main()
         app = &adminApp;
         app->run();
       }
-      else
+      else if (App::session == 2)
       {
         UserApp userApp;
         app = &userApp;

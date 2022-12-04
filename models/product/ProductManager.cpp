@@ -1,50 +1,61 @@
+#pragma once
 #include <iostream>
 #include <string>
 #include <vector>
 #include <stdexcept>
 #include "../Manager.cpp"
-#include "User.cpp"
+#include "../user/User.cpp"
+#include "Product.cpp"
 
-class User;
+class Product;
 
-class UserModel
+class ProductManager : public Manager<ProductManager>
 {
 private:
+    static std::string filePath;
     static int generateId();
     static std::vector<User> rearrangeData(std::vector<std::string>);
     static User *findUserById(std::vector<std::string>, std::string);
-    std::vector<std::string> searchAndRemove(std::vector<std::string>, std::string);
-    bool findAndUpdate(std::vector<std::string>, User user);
+    static std::vector<std::string> searchAndRemove(std::vector<std::string>, std::string);
+    static bool findAndUpdate(std::vector<std::string>, User user);
 
 public:
-    UserModel() {}
+    ProductManager(){}
+    ProductManager(std::string filePath) {
+        ProductManager::filePath = filePath;
+    }
+    std::string getStaticFilePath()
+    {
+        return ProductManager::filePath;
+    }
     static int countUsers();
     static std::vector<User> findAll();
-    static void create(User);
+    static void create(Product);
     static User findById(std::string);
-    void destroyById(std::string);
-    void update(User);
+    static void destroyById(std::string);
+    static void update(User);
     static std::string login(std::string, std::string);
 };
 
-int UserModel::countUsers()
+std::string ProductManager::filePath = "";
+
+int ProductManager::countUsers()
 {
-    return UserModel::findAll().size();
+    return ProductManager::findAll().size();
 }
 
-int UserModel::generateId()
+int ProductManager::generateId()
 {
-    Manager file;
-    std::vector<std::string> stream = file.readAll(constants::USER_FILE_PATH);
+    std::vector<std::string> stream = Manager::readAll();
     if (!stream.empty())
     {
-        return std::stoi(stream[stream.size() - 5]) + 1;
+        return std::stoi(stream[stream.size() - 6]) + 1;
     }
     else
         return 1;
 }
 
-std::vector<User> UserModel::rearrangeData(std::vector<std::string> data)
+std::vector<User> ProductManager::rearrangeData(std::vector<std::string> data)
 {
     std::vector<User> users;
     std::string id, username, password;
@@ -72,7 +83,7 @@ std::vector<User> UserModel::rearrangeData(std::vector<std::string> data)
     return users;
 }
 
-User *UserModel::findUserById(std::vector<std::string> data, std::string id)
+User *ProductManager::findUserById(std::vector<std::string> data, std::string id)
 {
     std::string userId, username, password, type;
     bool found = false;
@@ -107,7 +118,7 @@ User *UserModel::findUserById(std::vector<std::string> data, std::string id)
     return NULL;
 }
 
-std::vector<std::string> UserModel::searchAndRemove(std::vector<std::string> data, std::string id)
+std::vector<std::string> ProductManager::searchAndRemove(std::vector<std::string> data, std::string id)
 {
     for (std::vector<std::string>::size_type i = 0; i != data.size(); i++)
     {
@@ -120,7 +131,7 @@ std::vector<std::string> UserModel::searchAndRemove(std::vector<std::string> dat
     return data;
 }
 
-bool UserModel::findAndUpdate(std::vector<std::string> data, User user)
+bool ProductManager::findAndUpdate(std::vector<std::string> data, User user)
 {
     bool found = false;
     for (auto it = data.begin(); it != data.end(); ++it)
@@ -134,7 +145,7 @@ bool UserModel::findAndUpdate(std::vector<std::string> data, User user)
         {
             if (index % 5 == 2)
             {
-                data[index - 1] = user.getUsername();
+                data[index - 1] = user.getName();
             }
             if (index % 5 == 3)
             {
@@ -142,11 +153,10 @@ bool UserModel::findAndUpdate(std::vector<std::string> data, User user)
             }
             if (index % 5 == 0 || index == std::distance(data.begin(), data.end()))
             {
-                Manager file;
-                if (file.removeFile(constants::USER_FILE_PATH))
+                if (Manager::removeFile(constants::USER_FILE_PATH))
                 {
-                    file.createFile(constants::USER_FILE_PATH);
-                    file.write(data, constants::USER_FILE_PATH);
+                    Manager::createFile(constants::USER_FILE_PATH);
+                    Manager::write(data);
                     return true;
                 }
             }
@@ -155,31 +165,29 @@ bool UserModel::findAndUpdate(std::vector<std::string> data, User user)
     return false;
 }
 
-std::vector<User> UserModel::findAll()
+std::vector<User> ProductManager::findAll()
 {
-    Manager file;
     std::vector<std::string> stream; // Empty on creation
-    stream = file.readAll(constants::USER_FILE_PATH);
-    std::vector<User> users = UserModel::rearrangeData(stream);
+    stream = Manager::readAll();
+    std::vector<User> users = ProductManager::rearrangeData(stream);
     return users;
 }
 
-void UserModel::create(User user)
+void ProductManager::create(Product product)
 {
-    Manager file;
-    std::vector<std::string> userVec;
-    userVec.push_back(std::to_string(UserModel::generateId()));
-    userVec.push_back(user.getUsername());
-    userVec.push_back(user.getPassword());
-    userVec.push_back("0");
-    file.write(userVec, constants::USER_FILE_PATH);
-    std::cout << "User created successfully!" << std::endl;
+    std::vector<std::string> prod;
+    prod.push_back(std::to_string(ProductManager::generateId()));
+    prod.push_back(product.getUserId());
+    prod.push_back(product.getName());
+    prod.push_back(product.getAmount());
+    prod.push_back(product.getStatus());
+    Manager::write(prod);
+    std::cout << "Product is created successfully!" << std::endl;
 }
 
-User UserModel::findById(std::string id)
+User ProductManager::findById(std::string id)
 {
-    Manager file;
-    User *userPtr = UserModel::findUserById(file.readAll(constants::USER_FILE_PATH), id);
+    User *userPtr = ProductManager::findUserById(Manager::readAll(), id);
     if (!userPtr)
     {
         delete userPtr;
@@ -190,27 +198,25 @@ User UserModel::findById(std::string id)
     return user;
 }
 
-void UserModel::destroyById(std::string id)
+void ProductManager::destroyById(std::string id)
 {
-    Manager file;
     std::vector<std::string> data; // Empty on creation
-    data = file.readAll(constants::USER_FILE_PATH);
-    data = this->searchAndRemove(data, id);
-    if (file.removeFile(constants::USER_FILE_PATH))
+    data = Manager::readAll();
+    data = ProductManager::searchAndRemove(data, id);
+    if (Manager::removeFile(constants::USER_FILE_PATH))
     {
-        file.createFile(constants::USER_FILE_PATH);
-        file.write(data, constants::USER_FILE_PATH);
+        Manager::createFile(constants::USER_FILE_PATH);
+        Manager::write(data);
     }
 }
 
-void UserModel::update(User updatedUser)
+void ProductManager::update(User updatedUser)
 {
     try
     {
-        Manager file;
         std::vector<std::string> stream; // Empty on creation
-        stream = file.readAll(constants::USER_FILE_PATH);
-        bool updated = this->findAndUpdate(stream, updatedUser);
+        stream = Manager::readAll();
+        bool updated = ProductManager::findAndUpdate(stream, updatedUser);
         if (!updated)
         {
             throw std::invalid_argument("User Not Found");
@@ -224,10 +230,9 @@ void UserModel::update(User updatedUser)
     }
 }
 
-std::string UserModel::login(std::string username, std::string password)
+std::string ProductManager::login(std::string username, std::string password)
 {
-    Manager file;
-    std::vector<std::string> stream = file.readAll(constants::USER_FILE_PATH);
+    std::vector<std::string> stream = Manager::readAll();
     std::string userId, uname, psw;
     bool matchedUsername = false;
     bool matchedPassword = false;
@@ -247,7 +252,7 @@ std::string UserModel::login(std::string username, std::string password)
         {
             matchedPassword = true;
         }
-        else if(index % 5 != 2 && !matchedPassword)
+        else if (index % 5 != 2 && !matchedPassword)
         {
             matchedUsername = false;
         }

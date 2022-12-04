@@ -4,7 +4,7 @@
 class AdminApp : public App
 {
 public:
-    AdminApp() {}
+    AdminApp(): App::App() {}
 
     void run()
     {
@@ -12,7 +12,7 @@ public:
         do
         {
             /* code */
-            system("clear");
+            // system("clear");
             std::cout << "***********************************************************************\n\n";
             std::cout << "                                 OPTIONS                               \n\n";
             std::cout << "***********************        ADMIN  MENU        ******************************\n\n";

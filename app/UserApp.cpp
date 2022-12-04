@@ -1,18 +1,21 @@
 #include <iostream>
 #include "App.cpp"
+#include "../models/product/Product.cpp"
+#include "../models/product/ProductManager.cpp"
 
 class UserApp : public App
 {
 public:
-    UserApp() {}
+    UserApp() : App::App() {}
 
     void run()
     {
         std::string choiceStr;
+        std::string prodName, userId, amount, status;
         do
         {
             /* code */
-            system("clear");
+            // system("clear");
             std::cout << "***********************************************************************\n\n";
             std::cout << "                                OPTIONS                               \n\n";
             std::cout << "***********************        USER  MENU        ******************************\n\n";
@@ -26,6 +29,13 @@ public:
             {
             case 1:
                 std::cout << "Add Product" << std::endl;
+
+                std::cout << "Product Name: ";
+                std::getline(std::cin, prodName);
+                std::cout << "Product Amount: ";
+                std::getline(std::cin, amount);
+
+                ProductManager::create(Product(prodName, amount));
                 break;
             case 2:
                 std::cout << "Log Out!" << std::endl;

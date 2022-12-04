@@ -7,21 +7,81 @@
 #include <type_traits>
 #include "../commons/constant/constants.hpp"
 
+template <typename C>
 class Manager
 {
 private:
+    std::string FILE_PATH = "";
+
+protected:
+    // get file path
+    virtual std::string getStaticFilePath() = 0;
+    // write to file
+    // template <typename T>
+    // static void write(T str, std::string FILE_PATH);
+    // read from file
+    static std::vector<std::string> readAll();
+    // create file
+    static void createFile(std::string FILE_PATH);
+    // remove file
+    static bool removeFile(std::string FILE_PATH);
+
+    template <typename T, typename DUMMY = void>
+    struct Func
+    {
+        static void write(T input)
+        {
+            C child;
+            std::ofstream myfile(child.getStaticFilePath(), std::ios::app);
+            if (myfile.is_open())
+            {
+                myfile << input << constants::DELIMITER << "\n";
+                myfile.close();
+            }
+            else
+                std::cout << "Unable to open file\n";
+        }
+    };
+
+    template <typename DUMMY>
+    struct Func<std::vector<std::string>, DUMMY>
+    {
+        static void write(std::vector<std::string> input)
+        {
+            C child;
+            std::ofstream myfile(child.getStaticFilePath(), std::ios::app);
+            if (myfile.is_open())
+            {
+                for (std::vector<std::string>::iterator it = input.begin(); it != input.end(); ++it)
+                {
+                    std::cout << "value = " << *it << std::endl;
+                    if (*it != "" && (it + 1) == input.end())
+                    {
+                        myfile << *it << constants::DELIMITER << "\n";
+                    }
+                    else if (*it != "")
+                    {
+                        myfile << *it;
+                        if (*(it + 1) == "")
+                        {
+                            myfile << constants::DELIMITER << "\n";
+                        }
+                        else
+                            myfile << "\n";
+                    }
+                }
+                myfile.close();
+            }
+            else
+                std::cout << "Unable to open file\n";
+        }
+    };
+
+    template <typename T>
+    static void write(T str) { Func<T>::write(str); }
 
 public:
     Manager() {}
-    // write to file
-    template <typename T>
-    void write(T str, std::string FILE_PATH);
-    // read from file
-    std::vector<std::string> readAll(std::string FILE_PATH);
-    // create file
-    void createFile(std::string FILE_PATH);
-    // remove file
-    bool removeFile(std::string FILE_PATH);
 };
 
 std::vector<std::string> split_string_by_newline(const std::string &str)
@@ -37,53 +97,57 @@ std::vector<std::string> split_string_by_newline(const std::string &str)
     return result;
 }
 
-template <typename T>
-void Manager::write(T input, std::string FILE_PATH)
-{
-    std::ofstream myfile(FILE_PATH, std::ios::app);
-    if (myfile.is_open())
-    {
-        myfile << input << constants::DELIMITER << "\n";
-        myfile.close();
-    }
-    else
-        std::cout << "Unable to open file";
-}
+// template <typename C>
+// template <typename T>
+// void Manager<C>::write(T input, std::string FILE_PATH)
+// {
+//     std::ofstream myfile(FILE_PATH, std::ios::app);
+//     if (myfile.is_open())
+//     {
+//         myfile << input << constants::DELIMITER << "\n";
+//         myfile.close();
+//     }
+//     else
+//         std::cout << "Unable to open file";
+// }
 
-template <>
-void Manager::write< std::vector<std::string> >(std::vector<std::string> input, std::string FILE_PATH)
-{
-    std::ofstream myfile(FILE_PATH, std::ios::app);
-    if (myfile.is_open())
-    {
-        for (std::vector<std::string>::iterator it = input.begin(); it != input.end(); ++it)
-        {
-            if (*it != "" && (it + 1) == input.end())
-            {
-                myfile << *it << constants::DELIMITER << "\n";
-            }
-            else if (*it != "")
-            {
-                myfile << *it;
-                if(*(it + 1) == "")
-                {
-                    myfile << constants::DELIMITER << "\n";
-                }
-                else
-                    myfile << "\n";
-            }
-        }
-        myfile.close();
-    }
-    else
-        std::cout << "Unable to open file";
-}
+// template <typename C>
+// template <>
+// void Manager<C>::write<std::vector<std::string>>(std::vector<std::string> input, std::string FILE_PATH)
+// {
+//     std::ofstream myfile(FILE_PATH, std::ios::app);
+//     if (myfile.is_open())
+//     {
+//         for (std::vector<std::string>::iterator it = input.begin(); it != input.end(); ++it)
+//         {
+//             if (*it != "" && (it + 1) == input.end())
+//             {
+//                 myfile << *it << constants::DELIMITER << "\n";
+//             }
+//             else if (*it != "")
+//             {
+//                 myfile << *it;
+//                 if (*(it + 1) == "")
+//                 {
+//                     myfile << constants::DELIMITER << "\n";
+//                 }
+//                 else
+//                     myfile << "\n";
+//             }
+//         }
+//         myfile.close();
+//     }
+//     else
+//         std::cout << "Unable to open file";
+// }
 
-std::vector<std::string> Manager::readAll(std::string FILE_PATH)
+template <typename C>
+std::vector<std::string> Manager<C>::readAll()
 {
+    C child;
     int numUsers = 0;
     std::string line;
-    std::ifstream myfile(FILE_PATH);
+    std::ifstream myfile(child.getStaticFilePath());
     auto result = std::vector<std::string>();
     auto data = std::vector<std::string>();
     if (myfile.is_open())
@@ -105,8 +169,11 @@ std::vector<std::string> Manager::readAll(std::string FILE_PATH)
     return data;
 }
 
-bool Manager::removeFile(std::string FILE_PATH)
+template <typename C>
+bool Manager<C>::removeFile(std::string FILE_PATH)
 {
+    C child;
+    FILE_PATH = child.getStaticFilePath();
     const char *filename = FILE_PATH.c_str();
 
     // deletes the file if it exists
@@ -124,7 +191,9 @@ bool Manager::removeFile(std::string FILE_PATH)
     }
 }
 
-void Manager::createFile(std::string FILE_PATH)
+template <typename C>
+void Manager<C>::createFile(std::string FILE_PATH)
 {
-    std::ofstream createFile(FILE_PATH);
+    C child;
+    std::ofstream createFile(child.getStaticFilePath());
 }
