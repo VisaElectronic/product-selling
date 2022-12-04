@@ -12,7 +12,7 @@ private:
 
 public:
     User(): id(0), username(""), password(""), type("0") {}
-    User(std::string username, std::string password) : id("1"), username(username), password(password), type("0") {}
+    User(std::string username, std::string password, std::string type = "0") : id("1"), username(username), password(password), type(type) {}
     std::string getId() const
     {
         return this->id;

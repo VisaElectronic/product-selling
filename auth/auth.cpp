@@ -54,6 +54,7 @@ public:
         User user = UserModel::findById(userId);
         std::cout << "Login Successfully!" << std::endl;
         user.getType() == "1" ? App::session = 1 : App::session = 2;
+        std::cout << "App: " << App::session << std::endl;
     }
 
     void signUp(std::string &username, std::string &password, std::string &confirmPassword)

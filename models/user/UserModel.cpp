@@ -2,7 +2,7 @@
 #include <string>
 #include <vector>
 #include <stdexcept>
-#include "../../commons/IOFile.cpp"
+#include "../Manager.cpp"
 #include "User.cpp"
 
 class User;
@@ -11,7 +11,7 @@ class UserModel
 {
 private:
     static int generateId();
-    std::vector<User> rearrangeData(std::vector<std::string>);
+    static std::vector<User> rearrangeData(std::vector<std::string>);
     static User *findUserById(std::vector<std::string>, std::string);
     std::vector<std::string> searchAndRemove(std::vector<std::string>, std::string);
     bool findAndUpdate(std::vector<std::string>, User user);
@@ -19,24 +19,22 @@ private:
 public:
     UserModel() {}
     static int countUsers();
-    std::vector<User> findAll();
+    static std::vector<User> findAll();
     static void create(User);
     static User findById(std::string);
     void destroyById(std::string);
     void update(User);
     static std::string login(std::string, std::string);
-    static std::string test();
 };
 
 int UserModel::countUsers()
 {
-    UserModel userModel;
-    return userModel.findAll().size();
+    return UserModel::findAll().size();
 }
 
 int UserModel::generateId()
 {
-    IOFile file;
+    Manager file;
     std::vector<std::string> stream = file.readAll(constants::USER_FILE_PATH);
     if (!stream.empty())
     {
@@ -76,7 +74,7 @@ std::vector<User> UserModel::rearrangeData(std::vector<std::string> data)
 
 User *UserModel::findUserById(std::vector<std::string> data, std::string id)
 {
-    std::string userId, username, password;
+    std::string userId, username, password, type;
     bool found = false;
     for (auto it = data.begin(); it != data.end(); ++it)
     {
@@ -96,9 +94,13 @@ User *UserModel::findUserById(std::vector<std::string> data, std::string id)
             {
                 password = *it;
             }
+            if (index % 5 == 4)
+            {
+                type = *it;
+            }
             if (index % 5 == 0 || index == std::distance(data.begin(), data.end()))
             {
-                return new User(username, password);
+                return new User(username, password, type);
             }
         }
     }
@@ -140,7 +142,7 @@ bool UserModel::findAndUpdate(std::vector<std::string> data, User user)
             }
             if (index % 5 == 0 || index == std::distance(data.begin(), data.end()))
             {
-                IOFile file;
+                Manager file;
                 if (file.removeFile(constants::USER_FILE_PATH))
                 {
                     file.createFile(constants::USER_FILE_PATH);
@@ -155,16 +157,16 @@ bool UserModel::findAndUpdate(std::vector<std::string> data, User user)
 
 std::vector<User> UserModel::findAll()
 {
-    IOFile file;
+    Manager file;
     std::vector<std::string> stream; // Empty on creation
     stream = file.readAll(constants::USER_FILE_PATH);
-    std::vector<User> users = this->rearrangeData(stream);
+    std::vector<User> users = UserModel::rearrangeData(stream);
     return users;
 }
 
 void UserModel::create(User user)
 {
-    IOFile file;
+    Manager file;
     std::vector<std::string> userVec;
     userVec.push_back(std::to_string(UserModel::generateId()));
     userVec.push_back(user.getUsername());
@@ -176,7 +178,7 @@ void UserModel::create(User user)
 
 User UserModel::findById(std::string id)
 {
-    IOFile file;
+    Manager file;
     User *userPtr = UserModel::findUserById(file.readAll(constants::USER_FILE_PATH), id);
     if (!userPtr)
     {
@@ -190,7 +192,7 @@ User UserModel::findById(std::string id)
 
 void UserModel::destroyById(std::string id)
 {
-    IOFile file;
+    Manager file;
     std::vector<std::string> data; // Empty on creation
     data = file.readAll(constants::USER_FILE_PATH);
     data = this->searchAndRemove(data, id);
@@ -205,7 +207,7 @@ void UserModel::update(User updatedUser)
 {
     try
     {
-        IOFile file;
+        Manager file;
         std::vector<std::string> stream; // Empty on creation
         stream = file.readAll(constants::USER_FILE_PATH);
         bool updated = this->findAndUpdate(stream, updatedUser);
@@ -224,7 +226,7 @@ void UserModel::update(User updatedUser)
 
 std::string UserModel::login(std::string username, std::string password)
 {
-    IOFile file;
+    Manager file;
     std::vector<std::string> stream = file.readAll(constants::USER_FILE_PATH);
     std::string userId, uname, psw;
     bool matchedUsername = false;
@@ -257,11 +259,5 @@ std::string UserModel::login(std::string username, std::string password)
             }
         }
     }
-    return "";
-}
-
-std::string UserModel::test()
-{
-    std::cout << "test" <<std::endl;
     return "";
 }

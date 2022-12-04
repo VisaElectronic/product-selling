@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 
 class App
@@ -9,10 +10,7 @@ public:
     // session = 2 for normal user
     static int session;
 
-    void run()
-    {
-
-    }
+    virtual void run(){};
 };
 
 int App::session = 0;
