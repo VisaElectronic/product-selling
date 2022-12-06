@@ -22,9 +22,9 @@ protected:
     // read from file
     static std::vector<std::string> readAll();
     // create file
-    static void createFile(std::string FILE_PATH);
+    static void createFile();
     // remove file
-    static bool removeFile(std::string FILE_PATH);
+    static bool removeFile();
 
     template <typename T, typename DUMMY = void>
     struct Func
@@ -54,7 +54,6 @@ protected:
             {
                 for (std::vector<std::string>::iterator it = input.begin(); it != input.end(); ++it)
                 {
-                    std::cout << "value = " << *it << std::endl;
                     if (*it != "" && (it + 1) == input.end())
                     {
                         myfile << *it << constants::DELIMITER << "\n";
@@ -170,10 +169,10 @@ std::vector<std::string> Manager<C>::readAll()
 }
 
 template <typename C>
-bool Manager<C>::removeFile(std::string FILE_PATH)
+bool Manager<C>::removeFile()
 {
     C child;
-    FILE_PATH = child.getStaticFilePath();
+    std::string FILE_PATH = child.getStaticFilePath();
     const char *filename = FILE_PATH.c_str();
 
     // deletes the file if it exists
@@ -192,7 +191,7 @@ bool Manager<C>::removeFile(std::string FILE_PATH)
 }
 
 template <typename C>
-void Manager<C>::createFile(std::string FILE_PATH)
+void Manager<C>::createFile()
 {
     C child;
     std::ofstream createFile(child.getStaticFilePath());

@@ -8,14 +8,19 @@ class Product: public Model
 {
 private:
     std::string userId;
+    std::string price;
     std::string amount;
     std::string status;
 public:
-    Product(): Model::Model(), userId(""), amount(""), status("") {}
-    Product(std::string name, std::string amount, std::string status = "1", std::string id = "0"): Model::Model(id, name), userId(App::sessionId), amount(amount), status(status) {}
+    Product(): Model::Model(), userId(""), price(""), amount(""), status("") {}
+    Product(std::string name, std::string price, std::string amount, std::string status = "1", std::string userId = App::sessionId, std::string id = "0"): Model::Model(id, name), userId(userId), price(price), amount(amount), status(status) {}
     std::string getUserId()
     {
         return this->userId;
+    }
+    std::string getPrice()
+    {
+        return this->price;
     }
     std::string getAmount()
     {

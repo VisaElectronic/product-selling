@@ -8,4 +8,5 @@ namespace constants
     const std::string USER_FILE_PATH = "./database/users.txt";
     const std::string PRODUCT_FILE_PATH = "./database/products.txt";
     const char DELIMITER = '~';
+    const char* CLEAR = "clear";
 }

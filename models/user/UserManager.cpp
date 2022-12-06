@@ -152,12 +152,12 @@ bool UserManager::findAndUpdate(std::vector<std::string> data, User user)
             }
             if (index % 5 == 0 || index == std::distance(data.begin(), data.end()))
             {
-                if (Manager::removeFile(constants::USER_FILE_PATH))
-                {
-                    Manager::createFile(constants::USER_FILE_PATH);
-                    Manager::write(data);
-                    return true;
-                }
+                // if (Manager::removeFile(constants::USER_FILE_PATH))
+                // {
+                //     Manager::createFile(constants::USER_FILE_PATH);
+                //     Manager::write(data);
+                //     return true;
+                // }
             }
         }
     }
@@ -180,7 +180,6 @@ void UserManager::create(User user)
     userVec.push_back(user.getPassword());
     userVec.push_back("0");
     Manager::write(userVec);
-    std::cout << "User created successfully!" << std::endl;
 }
 
 User UserManager::findById(std::string id)
@@ -201,11 +200,11 @@ void UserManager::destroyById(std::string id)
     std::vector<std::string> data; // Empty on creation
     data = Manager::readAll();
     data = UserManager::searchAndRemove(data, id);
-    if (Manager::removeFile(constants::USER_FILE_PATH))
-    {
-        Manager::createFile(constants::USER_FILE_PATH);
-        Manager::write(data);
-    }
+    // if (Manager::removeFile(constants::USER_FILE_PATH))
+    // {
+    //     Manager::createFile(constants::USER_FILE_PATH);
+    //     Manager::write(data);
+    // }
 }
 
 void UserManager::update(User updatedUser)

@@ -1,5 +1,6 @@
 #include <iostream>
 #include "App.cpp"
+#include "../commons/constant/constants.hpp"
 
 class AdminApp : public App
 {
@@ -31,7 +32,7 @@ public:
                 std::cout << "Log Out!" << std::endl;
                 break;
             default:
-                system("clear");
+                system(constants::CLEAR);
                 std::cout << "Invalid option, Try again..\n"
                           << std::endl;
             }

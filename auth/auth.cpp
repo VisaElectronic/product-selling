@@ -52,10 +52,8 @@ public:
             return;
         }
         User user = UserManager::findById(userId);
-        std::cout << "Login Successfully!" << std::endl;
         user.getType() == "1" ? App::session = 1 : App::session = 2;
         App::sessionId = user.getId();
-        std::cout << "sessionId: " << user.getName() << std::endl;
     }
 
     void signUp(std::string &username, std::string &password, std::string &confirmPassword)

@@ -6,6 +6,7 @@
 #include "app/AdminApp.cpp"
 #include "app/UserApp.cpp"
 #include "database/Database.cpp"
+#include "commons/constant/constants.hpp"
 
 int main()
 {
@@ -15,10 +16,9 @@ int main()
   std::string choiceStr;
   do
   {
-    /* code */
     std::string username, password, confirmPassword;
-    std::cout << "***********************************************************************\n\n\n";
-    std::cout << "                      Product Selling System                               \n\n";
+    std::cout << "***********************************************************************\n";
+    std::cout << "\033[1;33m                      Product Booking System                               \033[0m\n";
     std::cout << "***********************        MENU        ******************************\n\n";
     std::cout << "1.LOGIN" << std::endl;
     std::cout << "2.REGISTER" << std::endl;
@@ -30,6 +30,7 @@ int main()
     {
     case 1:
       auth.signIn(username, password);
+      std::cout << "\033[1;32mLogin Successfully!\033[0m" << std::endl;
       if (App::session == 1)
       {
         AdminApp adminApp;
@@ -45,6 +46,8 @@ int main()
       break;
     case 2:
       auth.signUp(username, password, confirmPassword);
+      system(constants::CLEAR);
+      std::cout << "\033[1;32mUser created successfully!\033[0m" << std::endl;
       // app.signUp(username, password, confirmPassword);
       break;
     case 3:
@@ -52,7 +55,7 @@ int main()
       std::cout << "Thanks for using this program.\nThis program is created by @SophaVisa\n\n";
       break;
     default:
-      system("clear");
+      system(constants::CLEAR);
       std::cout << "Invalid option, Try again..\n"
                 << std::endl;
     }
