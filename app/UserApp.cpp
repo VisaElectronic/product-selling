@@ -174,6 +174,13 @@ public:
             prod = ProductManager::find(prodId);
             if (prod.getId() != "0")
             {
+                Booking bookProd = BookingController::findByProdId(prodId);
+                if (bookProd.getId() != "")
+                {
+                    std::cout << "\033[1;31mProduct is booked! Can not delete!\033[0m" << std::endl;
+                    std::cin.get();
+                    continue;
+                }
                 ProductManager::destroyById(prodId);
                 std::cout << "\033[1;32mProduct is deleted successfully!\033[0m" << std::endl;
             }
@@ -231,12 +238,27 @@ public:
     void showMyBookingProducts()
     {
         system(constants::CLEAR);
-        std::cout << "\n\033[1;33m***** My Booking Product *****\033[0m\n" << std::endl;
+        std::cout << "\n\033[1;33m***** I Booked The Products *****\033[0m\n" << std::endl;
         std::vector<Booking> allBk = BookingController::findByBuyerId(App::sessionId);
         std::cout << "\033[1;34m" << std::setw(2) << "Id" << std::setw(15) << "Name" << std::setw(10) << "Price" << std::setw(10) << "Amount" << std::setw(12) << "Seller"  << "\033[0m" << std::endl;
         for (auto it = allBk.begin(); it != allBk.end(); ++it)
         {
             User user = UserManager::findById(it->getSellerId());
+            Product prod = ProductManager::findById(it->getProdId());
+            std::cout << std::setw(2) << it->getId() << std::setw(15) << prod.getName() << std::setw(10) << it->getPrice() << std::setw(10) << it->getAmount() << std::setw(12) << user.getName() << std::endl;
+        }
+        std::cin.get();
+    }
+
+    void showBookedProducts()
+    {
+        system(constants::CLEAR);
+        std::cout << "\n\033[1;33m***** Someone Booked Our Product *****\033[0m\n" << std::endl;
+        std::vector<Booking> allBk = BookingController::findBySellerId(App::sessionId);
+        std::cout << "\033[1;34m" << std::setw(2) << "Id" << std::setw(15) << "Name" << std::setw(10) << "Price" << std::setw(10) << "Amount" << std::setw(12) << "Buyer"  << "\033[0m" << std::endl;
+        for (auto it = allBk.begin(); it != allBk.end(); ++it)
+        {
+            User user = UserManager::findById(it->getBuyerId());
             Product prod = ProductManager::findById(it->getProdId());
             std::cout << std::setw(2) << it->getId() << std::setw(15) << prod.getName() << std::setw(10) << it->getPrice() << std::setw(10) << it->getAmount() << std::setw(12) << user.getName() << std::endl;
         }
@@ -260,7 +282,6 @@ public:
             std::cout << "6.MY BOOKING PRODUCT" << std::endl;
             std::cout << "7.BOOKED PRODUCT" << std::endl;
             std::cout << "8.LOGOUT" << std::endl;
-            // std::cout << "3.Exit" << std::endl;
             std::cout << "\nEnter your choice :";
             std::getline(std::cin, choiceStr);
             std::cout << std::endl;
@@ -285,7 +306,8 @@ public:
                 this->showMyBookingProducts();
                 break;
             case 7:
-                std::cout << "BOOKED PRODUCT" << std::endl;
+                // list record of other book our product 
+                this->showBookedProducts();
                 break;
             case 8:
                 system(constants::CLEAR);

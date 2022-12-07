@@ -30,6 +30,7 @@ public:
     static void create(Booking);
     static std::vector<Booking> findByBuyerId(std::string);
     static std::vector<Booking> findBySellerId(std::string);
+    static Booking findByProdId(std::string);
 };
 
 std::string BookingController::filePath = "";
@@ -129,6 +130,22 @@ std::vector<Booking> BookingController::findBySellerId(std::string sellerId)
         if (it->getSellerId() == sellerId)
         {
             bk.push_back(*it);
+        }
+        
+    }
+    return bk;
+}
+
+Booking BookingController::findByProdId(std::string prodId)
+{
+    Booking bk;
+    std::vector<Booking> allBk = BookingController::findAll();
+    for (auto it = allBk.begin(); it != allBk.end(); ++it)
+    {
+        if (it->getProdId() == prodId)
+        {
+            bk = *it;
+            return bk;
         }
         
     }

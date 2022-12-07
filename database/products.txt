@@ -8,7 +8,7 @@ books
 3
 phone
 8
-6
+4
 1~
 5
 2
