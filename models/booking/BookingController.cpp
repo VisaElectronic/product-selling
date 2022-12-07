@@ -3,13 +3,13 @@
 #include <string>
 #include <vector>
 #include <stdexcept>
-#include "../Manager.cpp"
+#include "../Controller.cpp"
 #include "../user/User.cpp"
 #include "Booking.cpp"
 
 class Booking;
 
-class BookingController : public Manager<BookingController>
+class BookingController : public Controller<BookingController>
 {
 private:
     static std::string filePath;
@@ -37,7 +37,7 @@ std::string BookingController::filePath = "";
 
 int BookingController::generateId()
 {
-    std::vector<std::string> stream = Manager::readAll();
+    std::vector<std::string> stream = Controller::readAll();
     if (!stream.empty())
     {
         return std::stoi(stream[stream.size() - 7]) + 1;
@@ -55,13 +55,13 @@ void BookingController::create(Booking bk)
     prod.push_back(bk.getProdId());
     prod.push_back(bk.getPrice());
     prod.push_back(bk.getAmount());
-    Manager::write(prod);
+    Controller::write(prod);
 }
 
 std::vector<Booking> BookingController::findAll()
 {
     std::vector<std::string> stream; // Empty on creation
-    stream = Manager::readAll();
+    stream = Controller::readAll();
     std::vector<Booking> prods = BookingController::rearrangeData(stream);
     return prods;
 }

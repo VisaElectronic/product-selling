@@ -3,13 +3,13 @@
 #include <string>
 #include <vector>
 #include <stdexcept>
-#include "../Manager.cpp"
+#include "../Controller.cpp"
 #include "../user/User.cpp"
 #include "Product.cpp"
 
 class Product;
 
-class ProductManager : public Manager<ProductManager>
+class ProductController : public Controller<ProductController>
 {
 private:
     static std::string filePath;
@@ -20,14 +20,14 @@ private:
     static bool findAndUpdate(std::vector<std::string>, Product user);
 
 public:
-    ProductManager() {}
-    ProductManager(std::string filePath)
+    ProductController() {}
+    ProductController(std::string filePath)
     {
-        ProductManager::filePath = filePath;
+        ProductController::filePath = filePath;
     }
     std::string getStaticFilePath()
     {
-        return ProductManager::filePath;
+        return ProductController::filePath;
     }
     static int countUsers();
     static std::vector<Product> findAll();
@@ -40,16 +40,16 @@ public:
     static void update(Product);
 };
 
-std::string ProductManager::filePath = "";
+std::string ProductController::filePath = "";
 
-int ProductManager::countUsers()
+int ProductController::countUsers()
 {
-    return ProductManager::findAll().size();
+    return ProductController::findAll().size();
 }
 
-int ProductManager::generateId()
+int ProductController::generateId()
 {
-    std::vector<std::string> stream = Manager::readAll();
+    std::vector<std::string> stream = Controller::readAll();
     if (!stream.empty())
     {
         return std::stoi(stream[stream.size() - 7]) + 1;
@@ -58,7 +58,7 @@ int ProductManager::generateId()
         return 1;
 }
 
-std::vector<Product> ProductManager::rearrangeData(std::vector<std::string> data)
+std::vector<Product> ProductController::rearrangeData(std::vector<std::string> data)
 {
     std::vector<Product> users;
     std::string id, userId, name, price, amount, status;
@@ -98,7 +98,7 @@ std::vector<Product> ProductManager::rearrangeData(std::vector<std::string> data
     return users;
 }
 
-Product *ProductManager::findUserById(std::vector<std::string> data, std::string id)
+Product *ProductController::findUserById(std::vector<std::string> data, std::string id)
 {
     std::string prodId, userId, name, price, amount, status;
     bool found = false;
@@ -141,7 +141,7 @@ Product *ProductManager::findUserById(std::vector<std::string> data, std::string
     return NULL;
 }
 
-std::vector<std::string> ProductManager::searchAndRemove(std::vector<std::string> data, std::string id)
+std::vector<std::string> ProductController::searchAndRemove(std::vector<std::string> data, std::string id)
 {
     for (std::vector<std::string>::size_type i = 0; i != data.size(); i++)
     {
@@ -154,7 +154,7 @@ std::vector<std::string> ProductManager::searchAndRemove(std::vector<std::string
     return data;
 }
 
-bool ProductManager::findAndUpdate(std::vector<std::string> data, Product prod)
+bool ProductController::findAndUpdate(std::vector<std::string> data, Product prod)
 {
     bool found = false;
     for (auto it = data.begin(); it != data.end(); ++it)
@@ -188,10 +188,10 @@ bool ProductManager::findAndUpdate(std::vector<std::string> data, Product prod)
             }
             if (index % 7 == 0 || index == std::distance(data.begin(), data.end()))
             {
-                if (Manager::removeFile())
+                if (Controller::removeFile())
                 {
-                    Manager::createFile();
-                    Manager::write(data);
+                    Controller::createFile();
+                    Controller::write(data);
                     return true;
                 }
             }
@@ -200,19 +200,19 @@ bool ProductManager::findAndUpdate(std::vector<std::string> data, Product prod)
     return false;
 }
 
-std::vector<Product> ProductManager::findAll()
+std::vector<Product> ProductController::findAll()
 {
     std::vector<std::string> stream; // Empty on creation
-    stream = Manager::readAll();
-    std::vector<Product> prods = ProductManager::rearrangeData(stream);
+    stream = Controller::readAll();
+    std::vector<Product> prods = ProductController::rearrangeData(stream);
     return prods;
 }
 
 // product belong to specific user
-std::vector<Product> ProductManager::findAll(std::string sessionId)
+std::vector<Product> ProductController::findAll(std::string sessionId)
 {
     std::vector<Product> prods;
-    std::vector<Product> allProds = ProductManager::findAll();
+    std::vector<Product> allProds = ProductController::findAll();
     for (auto it = allProds.begin(); it != allProds.end(); ++it)
     {
         if (it->getUserId() == sessionId)
@@ -224,10 +224,10 @@ std::vector<Product> ProductManager::findAll(std::string sessionId)
     return prods;
 }
 
-std::vector<Product> ProductManager::findOtherAll(std::string sessionId)
+std::vector<Product> ProductController::findOtherAll(std::string sessionId)
 {
     std::vector<Product> prods;
-    std::vector<Product> allProds = ProductManager::findAll();
+    std::vector<Product> allProds = ProductController::findAll();
     for (auto it = allProds.begin(); it != allProds.end(); ++it)
     {
         if (it->getUserId() != sessionId)
@@ -239,21 +239,21 @@ std::vector<Product> ProductManager::findOtherAll(std::string sessionId)
     return prods;
 }
 
-void ProductManager::create(Product product)
+void ProductController::create(Product product)
 {
     std::vector<std::string> prod;
-    prod.push_back(std::to_string(ProductManager::generateId()));
+    prod.push_back(std::to_string(ProductController::generateId()));
     prod.push_back(product.getUserId());
     prod.push_back(product.getName());
     prod.push_back(product.getPrice());
     prod.push_back(product.getAmount());
     prod.push_back(product.getStatus());
-    Manager::write(prod);
+    Controller::write(prod);
 }
 
-Product ProductManager::findById(std::string id)
+Product ProductController::findById(std::string id)
 {
-    Product *prodPtr = ProductManager::findUserById(Manager::readAll(), id);
+    Product *prodPtr = ProductController::findUserById(Controller::readAll(), id);
     if (!prodPtr)
     {
         delete prodPtr;
@@ -264,11 +264,11 @@ Product ProductManager::findById(std::string id)
     return prod;
 }
 
-Product ProductManager::find(std::string id)
+Product ProductController::find(std::string id)
 {
     bool found = false;
     Product prod;
-    std::vector<Product> allProds = ProductManager::findAll(App::sessionId);
+    std::vector<Product> allProds = ProductController::findAll(App::sessionId);
     for (auto it = allProds.begin(); it != allProds.end(); ++it)
     {
         if (it->getId() == id)
@@ -281,25 +281,25 @@ Product ProductManager::find(std::string id)
     return Product();
 }
 
-void ProductManager::destroyById(std::string id)
+void ProductController::destroyById(std::string id)
 {
     std::vector<std::string> data; // Empty on creation
-    data = Manager::readAll();
-    data = ProductManager::searchAndRemove(data, id);
-    if (Manager::removeFile())
+    data = Controller::readAll();
+    data = ProductController::searchAndRemove(data, id);
+    if (Controller::removeFile())
     {
-        Manager::createFile();
-        Manager::write(data);
+        Controller::createFile();
+        Controller::write(data);
     }
 }
 
-void ProductManager::update(Product updatedProd)
+void ProductController::update(Product updatedProd)
 {
     try
     {
         std::vector<std::string> stream; // Empty on creation
-        stream = Manager::readAll();
-        bool updated = ProductManager::findAndUpdate(stream, updatedProd);
+        stream = Controller::readAll();
+        bool updated = ProductController::findAndUpdate(stream, updatedProd);
         if (!updated)
         {
             throw std::invalid_argument("Product Not Found");

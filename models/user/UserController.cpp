@@ -3,12 +3,12 @@
 #include <string>
 #include <vector>
 #include <stdexcept>
-#include "../Manager.cpp"
+#include "../Controller.cpp"
 #include "User.cpp"
 
 class User;
 
-class UserManager: public Manager<UserManager>
+class UserController: public Controller<UserController>
 {
 private:
     static std::string filePath;
@@ -19,13 +19,13 @@ private:
     static bool findAndUpdate(std::vector<std::string>, User user);
 
 public:
-    UserManager(){}
-    UserManager(std::string filePath){
-        UserManager::filePath = filePath;
+    UserController(){}
+    UserController(std::string filePath){
+        UserController::filePath = filePath;
     }
     std::string getStaticFilePath()
     {
-        return UserManager::filePath;
+        return UserController::filePath;
     }
     static int countUsers();
     static std::vector<User> findAll();
@@ -36,16 +36,16 @@ public:
     static std::string login(std::string, std::string);
 };
 
-std::string UserManager::filePath = "";
+std::string UserController::filePath = "";
 
-int UserManager::countUsers()
+int UserController::countUsers()
 {
-    return UserManager::findAll().size();
+    return UserController::findAll().size();
 }
 
-int UserManager::generateId()
+int UserController::generateId()
 {
-    std::vector<std::string> stream = Manager::readAll();
+    std::vector<std::string> stream = Controller::readAll();
     if (!stream.empty())
     {
         return std::stoi(stream[stream.size() - 5]) + 1;
@@ -54,7 +54,7 @@ int UserManager::generateId()
         return 1;
 }
 
-std::vector<User> UserManager::rearrangeData(std::vector<std::string> data)
+std::vector<User> UserController::rearrangeData(std::vector<std::string> data)
 {
     std::vector<User> users;
     std::string id, username, password;
@@ -82,7 +82,7 @@ std::vector<User> UserManager::rearrangeData(std::vector<std::string> data)
     return users;
 }
 
-User *UserManager::findUserById(std::vector<std::string> data, std::string id)
+User *UserController::findUserById(std::vector<std::string> data, std::string id)
 {
     std::string userId, username, password, type;
     bool found = false;
@@ -117,7 +117,7 @@ User *UserManager::findUserById(std::vector<std::string> data, std::string id)
     return NULL;
 }
 
-std::vector<std::string> UserManager::searchAndRemove(std::vector<std::string> data, std::string id)
+std::vector<std::string> UserController::searchAndRemove(std::vector<std::string> data, std::string id)
 {
     for (std::vector<std::string>::size_type i = 0; i != data.size(); i++)
     {
@@ -130,7 +130,7 @@ std::vector<std::string> UserManager::searchAndRemove(std::vector<std::string> d
     return data;
 }
 
-bool UserManager::findAndUpdate(std::vector<std::string> data, User user)
+bool UserController::findAndUpdate(std::vector<std::string> data, User user)
 {
     bool found = false;
     for (auto it = data.begin(); it != data.end(); ++it)
@@ -152,10 +152,10 @@ bool UserManager::findAndUpdate(std::vector<std::string> data, User user)
             }
             if (index % 5 == 0 || index == std::distance(data.begin(), data.end()))
             {
-                // if (Manager::removeFile(constants::USER_FILE_PATH))
+                // if (Controller::removeFile(constants::USER_FILE_PATH))
                 // {
-                //     Manager::createFile(constants::USER_FILE_PATH);
-                //     Manager::write(data);
+                //     Controller::createFile(constants::USER_FILE_PATH);
+                //     Controller::write(data);
                 //     return true;
                 // }
             }
@@ -164,27 +164,27 @@ bool UserManager::findAndUpdate(std::vector<std::string> data, User user)
     return false;
 }
 
-std::vector<User> UserManager::findAll()
+std::vector<User> UserController::findAll()
 {
     std::vector<std::string> stream; // Empty on creation
-    stream = Manager::readAll();
-    std::vector<User> users = UserManager::rearrangeData(stream);
+    stream = Controller::readAll();
+    std::vector<User> users = UserController::rearrangeData(stream);
     return users;
 }
 
-void UserManager::create(User user)
+void UserController::create(User user)
 {
     std::vector<std::string> userVec;
-    userVec.push_back(std::to_string(UserManager::generateId()));
+    userVec.push_back(std::to_string(UserController::generateId()));
     userVec.push_back(user.getName());
     userVec.push_back(user.getPassword());
     userVec.push_back("0");
-    Manager::write(userVec);
+    Controller::write(userVec);
 }
 
-User UserManager::findById(std::string id)
+User UserController::findById(std::string id)
 {
-    User *userPtr = UserManager::findUserById(Manager::readAll(), id);
+    User *userPtr = UserController::findUserById(Controller::readAll(), id);
     if (!userPtr)
     {
         delete userPtr;
@@ -195,25 +195,25 @@ User UserManager::findById(std::string id)
     return user;
 }
 
-void UserManager::destroyById(std::string id)
+void UserController::destroyById(std::string id)
 {
     std::vector<std::string> data; // Empty on creation
-    data = Manager::readAll();
-    data = UserManager::searchAndRemove(data, id);
-    // if (Manager::removeFile(constants::USER_FILE_PATH))
+    data = Controller::readAll();
+    data = UserController::searchAndRemove(data, id);
+    // if (Controller::removeFile(constants::USER_FILE_PATH))
     // {
-    //     Manager::createFile(constants::USER_FILE_PATH);
-    //     Manager::write(data);
+    //     Controller::createFile(constants::USER_FILE_PATH);
+    //     Controller::write(data);
     // }
 }
 
-void UserManager::update(User updatedUser)
+void UserController::update(User updatedUser)
 {
     try
     {
         std::vector<std::string> stream; // Empty on creation
-        stream = Manager::readAll();
-        bool updated = UserManager::findAndUpdate(stream, updatedUser);
+        stream = Controller::readAll();
+        bool updated = UserController::findAndUpdate(stream, updatedUser);
         if (!updated)
         {
             throw std::invalid_argument("User Not Found");
@@ -227,9 +227,9 @@ void UserManager::update(User updatedUser)
     }
 }
 
-std::string UserManager::login(std::string username, std::string password)
+std::string UserController::login(std::string username, std::string password)
 {
-    std::vector<std::string> stream = Manager::readAll();
+    std::vector<std::string> stream = Controller::readAll();
     std::string userId, uname, psw;
     bool matchedUsername = false;
     bool matchedPassword = false;

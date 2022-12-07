@@ -8,7 +8,7 @@
 #include "../commons/constant/constants.hpp"
 
 template <typename C>
-class Manager
+class Controller
 {
 private:
     std::string FILE_PATH = "";
@@ -80,7 +80,7 @@ protected:
     static void write(T str) { Func<T>::write(str); }
 
 public:
-    Manager() {}
+    Controller() {}
 };
 
 std::vector<std::string> split_string_by_newline(const std::string &str)
@@ -98,7 +98,7 @@ std::vector<std::string> split_string_by_newline(const std::string &str)
 
 // template <typename C>
 // template <typename T>
-// void Manager<C>::write(T input, std::string FILE_PATH)
+// void Controller<C>::write(T input, std::string FILE_PATH)
 // {
 //     std::ofstream myfile(FILE_PATH, std::ios::app);
 //     if (myfile.is_open())
@@ -112,7 +112,7 @@ std::vector<std::string> split_string_by_newline(const std::string &str)
 
 // template <typename C>
 // template <>
-// void Manager<C>::write<std::vector<std::string>>(std::vector<std::string> input, std::string FILE_PATH)
+// void Controller<C>::write<std::vector<std::string>>(std::vector<std::string> input, std::string FILE_PATH)
 // {
 //     std::ofstream myfile(FILE_PATH, std::ios::app);
 //     if (myfile.is_open())
@@ -141,7 +141,7 @@ std::vector<std::string> split_string_by_newline(const std::string &str)
 // }
 
 template <typename C>
-std::vector<std::string> Manager<C>::readAll()
+std::vector<std::string> Controller<C>::readAll()
 {
     C child;
     int numUsers = 0;
@@ -169,7 +169,7 @@ std::vector<std::string> Manager<C>::readAll()
 }
 
 template <typename C>
-bool Manager<C>::removeFile()
+bool Controller<C>::removeFile()
 {
     C child;
     std::string FILE_PATH = child.getStaticFilePath();
@@ -191,7 +191,7 @@ bool Manager<C>::removeFile()
 }
 
 template <typename C>
-void Manager<C>::createFile()
+void Controller<C>::createFile()
 {
     C child;
     std::ofstream createFile(child.getStaticFilePath());

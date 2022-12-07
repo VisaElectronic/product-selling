@@ -2,8 +2,8 @@
 #include <iomanip>
 #include "App.cpp"
 #include "../models/product/Product.cpp"
-#include "../models/product/ProductManager.cpp"
-#include "../models/user/UserManager.cpp"
+#include "../models/product/ProductController.cpp"
+#include "../models/user/UserController.cpp"
 #include "../models/booking/BookingController.cpp"
 
 class UserApp : public App
@@ -46,7 +46,7 @@ public:
                 continue;
             }
 
-            ProductManager::create(Product(prodName, price, amount));
+            ProductController::create(Product(prodName, price, amount));
             std::cout << "\033[1;32mProduct is added successfully!\033[0m" << std::endl;
             std::cin.get();
             break;
@@ -56,7 +56,7 @@ public:
     void listProducts()
     {
         std::cout << "List Products: " << std::endl;
-        std::vector<Product> prods = ProductManager::findAll(App::sessionId);
+        std::vector<Product> prods = ProductController::findAll(App::sessionId);
         std::cout << std::setw(2) << "Id" << std::setw(15) << "Name" << std::setw(10) << "Amount" << std::endl;
         for (auto it = prods.begin(); it != prods.end(); ++it)
         {
@@ -67,7 +67,7 @@ public:
     void listOtherProducts()
     {
         std::cout << "List Other Products: " << std::endl;
-        std::vector<Product> prods = ProductManager::findOtherAll(App::sessionId);
+        std::vector<Product> prods = ProductController::findOtherAll(App::sessionId);
         std::cout << "\033[1;34m" << std::setw(2) << "Id" << std::setw(15) << "Name" << std::setw(10) << "Price" << std::setw(10) << "Amount" << std::setw(12) << "Status" << "\033[0m" << std::endl;
         for (auto it = prods.begin(); it != prods.end(); ++it)
         {
@@ -89,7 +89,7 @@ public:
                 break;
             }
             system(constants::CLEAR);
-            prod = ProductManager::find(prodId);
+            prod = ProductController::find(prodId);
             if (prod.getId() != "0")
             {
                 std::cout << std::setw(2) << "Id" << std::setw(15) << "Name" << std::setw(10) << "Price" << std::setw(10) << "Amount" << std::setw(12) << "Status" << std::endl;
@@ -120,7 +120,7 @@ public:
                 break;
             }
             system(constants::CLEAR);
-            prod = ProductManager::find(prodId);
+            prod = ProductController::find(prodId);
             if (prod.getId() != "0")
             {
                 std::cout << std::setw(2) << "Id" << std::setw(15) << "Name" << std::setw(10) << "Price" << std::setw(10) << "Amount" << std::setw(12) << "Status" << std::endl;
@@ -144,7 +144,7 @@ public:
                 {
                     amount = prod.getAmount();
                 }
-                ProductManager::update(Product(prodName, price, amount, "1", App::sessionId, prodId));
+                ProductController::update(Product(prodName, price, amount, "1", App::sessionId, prodId));
                 std::cout << "\033[1;32mProduct is updated successfully!\033[0m" << std::endl;
             }
             else
@@ -171,7 +171,7 @@ public:
                 break;
             }
             system(constants::CLEAR);
-            prod = ProductManager::find(prodId);
+            prod = ProductController::find(prodId);
             if (prod.getId() != "0")
             {
                 Booking bookProd = BookingController::findByProdId(prodId);
@@ -181,7 +181,7 @@ public:
                     std::cin.get();
                     continue;
                 }
-                ProductManager::destroyById(prodId);
+                ProductController::destroyById(prodId);
                 std::cout << "\033[1;32mProduct is deleted successfully!\033[0m" << std::endl;
             }
             else
@@ -209,7 +209,7 @@ public:
             {
                 break;
             }
-            prod = ProductManager::findById(prodId);
+            prod = ProductController::findById(prodId);
             if (prod.getId() != "0")
             {
                 std::cout << "Enter amount to book: ";
@@ -217,7 +217,7 @@ public:
                 if (std::stoi(amount) <= std::stoi(prod.getAmount()))
                 {
                     int amt = std::stoi(prod.getAmount()) - std::stoi(amount);
-                    ProductManager::update(Product(prod.getName(), prod.getPrice(), std::to_string(amt), "1", prod.getUserId(), prodId));
+                    ProductController::update(Product(prod.getName(), prod.getPrice(), std::to_string(amt), "1", prod.getUserId(), prodId));
                     BookingController::create(Booking(App::sessionId, prod.getUserId(), prod.getId(), prod.getPrice(), amount));
                     std::cout << "\033[1;32mBooked product successfully!\033[0m" << std::endl;
                 }
@@ -243,8 +243,8 @@ public:
         std::cout << "\033[1;34m" << std::setw(2) << "Id" << std::setw(15) << "Name" << std::setw(10) << "Price" << std::setw(10) << "Amount" << std::setw(12) << "Seller"  << "\033[0m" << std::endl;
         for (auto it = allBk.begin(); it != allBk.end(); ++it)
         {
-            User user = UserManager::findById(it->getSellerId());
-            Product prod = ProductManager::findById(it->getProdId());
+            User user = UserController::findById(it->getSellerId());
+            Product prod = ProductController::findById(it->getProdId());
             std::cout << std::setw(2) << it->getId() << std::setw(15) << prod.getName() << std::setw(10) << it->getPrice() << std::setw(10) << it->getAmount() << std::setw(12) << user.getName() << std::endl;
         }
         std::cin.get();
@@ -258,8 +258,8 @@ public:
         std::cout << "\033[1;34m" << std::setw(2) << "Id" << std::setw(15) << "Name" << std::setw(10) << "Price" << std::setw(10) << "Amount" << std::setw(12) << "Buyer"  << "\033[0m" << std::endl;
         for (auto it = allBk.begin(); it != allBk.end(); ++it)
         {
-            User user = UserManager::findById(it->getBuyerId());
-            Product prod = ProductManager::findById(it->getProdId());
+            User user = UserController::findById(it->getBuyerId());
+            Product prod = ProductController::findById(it->getProdId());
             std::cout << std::setw(2) << it->getId() << std::setw(15) << prod.getName() << std::setw(10) << it->getPrice() << std::setw(10) << it->getAmount() << std::setw(12) << user.getName() << std::endl;
         }
         std::cin.get();
@@ -285,6 +285,7 @@ public:
             std::cout << "\nEnter your choice :";
             std::getline(std::cin, choiceStr);
             std::cout << std::endl;
+            system(constants::CLEAR);
             switch (std::stoi(choiceStr))
             {
             case 1:
@@ -310,6 +311,8 @@ public:
                 this->showBookedProducts();
                 break;
             case 8:
+                App::session = 0;
+                App::sessionId = "";
                 system(constants::CLEAR);
                 break;
             default:

@@ -30,7 +30,6 @@ int main()
     {
     case 1:
       auth.signIn(username, password);
-      std::cout << "\033[1;32mLogin Successfully!\033[0m" << std::endl;
       if (App::session == 1)
       {
         AdminApp adminApp;
