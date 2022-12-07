@@ -32,12 +32,12 @@ public:
     static int countUsers();
     static std::vector<Product> findAll();
     static std::vector<Product> findAll(std::string);
+    static std::vector<Product> findOtherAll(std::string);
     static void create(Product);
     static Product findById(std::string);
     static Product find(std::string);
     static void destroyById(std::string);
     static void update(Product);
-    static std::string login(std::string, std::string);
 };
 
 std::string ProductManager::filePath = "";
@@ -224,6 +224,21 @@ std::vector<Product> ProductManager::findAll(std::string sessionId)
     return prods;
 }
 
+std::vector<Product> ProductManager::findOtherAll(std::string sessionId)
+{
+    std::vector<Product> prods;
+    std::vector<Product> allProds = ProductManager::findAll();
+    for (auto it = allProds.begin(); it != allProds.end(); ++it)
+    {
+        if (it->getUserId() != sessionId)
+        {
+            prods.push_back(*it);
+        }
+        
+    }
+    return prods;
+}
+
 void ProductManager::create(Product product)
 {
     std::vector<std::string> prod;
@@ -254,7 +269,6 @@ Product ProductManager::find(std::string id)
     bool found = false;
     Product prod;
     std::vector<Product> allProds = ProductManager::findAll(App::sessionId);
-    Product *prodPtr = ProductManager::findUserById(Manager::readAll(), id);
     for (auto it = allProds.begin(); it != allProds.end(); ++it)
     {
         if (it->getId() == id)
@@ -290,48 +304,10 @@ void ProductManager::update(Product updatedProd)
         {
             throw std::invalid_argument("Product Not Found");
         }
-        std::cout << "\033[1;32mProduct is updated successfully!\033[0m" << std::endl;
     }
     catch (const std::invalid_argument &e)
     {
         // do stuff with exception...
         std::cout << e.what() << std::endl;
     }
-}
-
-std::string ProductManager::login(std::string username, std::string password)
-{
-    std::vector<std::string> stream = Manager::readAll();
-    std::string userId, uname, psw;
-    bool matchedUsername = false;
-    bool matchedPassword = false;
-    for (auto it = stream.begin(); it != stream.end(); ++it)
-    {
-        int index = std::distance(stream.begin(), it) + 1;
-        if (index % 5 == 1)
-        {
-            userId = *it;
-        }
-        if (index % 5 == 2 && username == *it)
-        {
-            matchedUsername = true;
-            uname = *it;
-        }
-        if (matchedUsername && index % 5 == 3 && password == *it)
-        {
-            matchedPassword = true;
-        }
-        else if (index % 5 != 2 && !matchedPassword)
-        {
-            matchedUsername = false;
-        }
-        if (matchedUsername && matchedPassword)
-        {
-            if (index % 5 == 0 || index == std::distance(stream.begin(), stream.end()))
-            {
-                return userId;
-            }
-        }
-    }
-    return "";
 }

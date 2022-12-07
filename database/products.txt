@@ -8,7 +8,7 @@ books
 3
 phone
 8
-7
+6
 1~
 5
 2
@@ -20,11 +20,11 @@ New Product
 3
 Laptop
 100
-2
+3
 1~
 7
 4
 test1
 5
-1
+0
 1~
