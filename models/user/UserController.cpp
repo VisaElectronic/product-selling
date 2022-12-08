@@ -57,7 +57,7 @@ int UserController::generateId()
 std::vector<User> UserController::rearrangeData(std::vector<std::string> data)
 {
     std::vector<User> users;
-    std::string id, username, password;
+    std::string id, username, password, type;
     for (auto it = data.begin(); it != data.end(); ++it)
     {
         int index = std::distance(data.begin(), it) + 1;
@@ -73,9 +73,13 @@ std::vector<User> UserController::rearrangeData(std::vector<std::string> data)
         {
             password = *it;
         }
+        if (index % 5 == 4)
+        {
+            type = *it;
+        }
         if (index % 5 == 0 || index == std::distance(data.begin(), data.end()))
         {
-            User user(username, password);
+            User user(username, password, type, id);
             users.push_back(user);
         }
     }
