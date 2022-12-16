@@ -86,6 +86,7 @@ public:
             case 4:
                 App::session = 0;
                 App::sessionId = "";
+                system(constants::CLEAR);
                 break;
             default:
                 system(constants::CLEAR);
